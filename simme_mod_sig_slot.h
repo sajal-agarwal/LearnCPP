@@ -3,7 +3,8 @@
 
 #include <functional>
 #include <map>
-#include <algorithm>
+
+namespace Utils {
 
 template <typename... Args>
 class Signal {
@@ -11,7 +12,7 @@ class Signal {
     struct SlotId {
         void *receiver;
         void(*slot)();
-        bool operator <(const SlotId &o) const {
+        bool operator< (const SlotId &o) const {
             return ((receiver != o.receiver) || (slot != o.slot));
         }
     };
@@ -30,7 +31,15 @@ public:
 
     Signal() {}
 
-    Signal(Signal const& other) {}
+    Signal(Signal const& other) = delete;
+
+    Signal& operator=(Signal const& other) = delete;
+
+    int connect(void (*func)(Args...)) {
+        connect(SlotId{0, reinterpret_cast<void(*)()>(func)}, ([=](Args... args) {
+            (*func)(args...);
+        }));
+    }
 
     template <typename T>
     int connect(T *inst, void (T::*func)(Args...)) {
@@ -44,6 +53,10 @@ public:
         connect(SlotId{inst, reinterpret_cast<void(*)()>(func)}, ([=](Args... args) {
             (inst->*func)(args...);
         }));
+    }
+
+    void disconnect(void (*func)(Args...)) {
+        disconnect(SlotId{0, reinterpret_cast<void(*)()>(func)});
     }
 
     template <typename T>
@@ -66,19 +79,22 @@ public:
         }
     }
 
-    Signal& operator=(Signal const& other) {
-        disconnect_all();
-    }
-
 private:
     std::map<SlotId, std::function<void(Args...)>> slots_;
 };
+
+}
 
 #endif /* MOD_SIGNAL_HPP */
 
 
 #if 0   //main.cpp
 #include <simme_mod_sig_slot.h>
+#include <iostream>
+
+void globalSlot(int id, std::string str) {
+    std::cout << "global slot called with : " << id << ", " << str << std::endl;
+}
 
 class TestSig {
 public:
@@ -98,6 +114,11 @@ int main(int /*argc*/, char** /*argv*/) {
     iss.connect(pots, &TestSig::const_slot);
     iss.emit(33, "Mee Mee");
     iss.disconnect(pots, &TestSig::const_slot);
+    iss.emit(66, "Gee Gee");
+
+    iss.connect(globalSlot);
+    iss.emit(66, "See See");
+    iss.disconnect(globalSlot);
     iss.emit(66, "Gee Gee");
 }
 #endif
