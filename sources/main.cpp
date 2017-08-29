@@ -3,16 +3,36 @@
 *
 *
 */
-#if 1
-#include<iostream>
-#include<vector>
+#include <iostream>
+#include <string>
 
-extern template class std::vector<int>;
-void pushint(int e);
+using namespace std;
 
-int main () {
-    pushint(9);
-    std::vector<int> intVect;
-    intVect.push_back(7);
+void sum(int a, int b)
+{
+    cout << a + b << endl;
 }
-#endif
+
+void concat(const string& a, const string& b)
+{
+    cout << a + b << endl;
+}
+
+void incr(int a, int &b) {
+    b += a;
+}
+
+template <typename PROC, typename A, typename B>
+void invoke(PROC p, A&& a, B&& b)
+{
+    p(a, b);
+}
+
+int main()
+{
+    invoke(sum, 10, 20);
+    invoke(concat, std::string("Hello "), std::string("world"));
+    int b = 5;
+    invoke(incr, 2, b);
+    return 0;
+}
