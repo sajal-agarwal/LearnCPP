@@ -13,26 +13,27 @@ int sqrt_int(int x) {
 
 template<typename... Args>
 void func(Args... args){
-    auto noOfParam = sizeof...(Args);
-#if 1
-    std::cout <<noOfParam << std::endl;
+    constexpr size_t noOfParam = sizeof...(Args);   //auto does not work here in vs2015
+    std::cout << "No of args: "<<noOfParam << std::endl;
+
+    std::cout << "Args before incr:\n";
+
+    using expander = int[];
+
+    expander{0, (std::cout << args << ' ', 0)...};
+
     foo(++args...);
 
-    //{std::cout << args ;}... ;
-#endif
-#if 1
+    std::cout << "\n\nArgs after incr:\n";
 
     int parmaArr[noOfParam] = {args...};
-
-    std::cout << "Parameters:" << std::endl;
     for (int i = 0; i < noOfParam; i++)
-        std::cout << parmaArr[i] << std::endl;
-#endif
+        std::cout << parmaArr[i] << ' ';
 }
 
 template<typename... Args>
 void callAnyFunc(void(*f)(Args...), Args...args) {
-    if (nullptr != f) {
+    if (nullptr != f) {     //this fails to compile in vs2015
         f(args...);
     }
 }
@@ -48,15 +49,13 @@ auto callAnyFunc2(_Fn&& f, Args&&... args) {
 #endif
 }
 
-
-#if 0
-#include<variadic_template.h>
-
 int main () {
+#if 0    //This fails to compile in vs2015
     callAnyFunc2(std::move(sqrt_int), 4);
-    std::cout << callAnyFunc2([](double x) { return x*x;}, 4.3) << std::endl;
+    std::cout << callAnyFunc2([](double x) { return x*x; }, 4.3) << std::endl;
     int(*fp)(int);
     fp = nullptr;
     std::cout << callAnyFunc2(fp, 4.3);
-}
 #endif
+    func(3, 29, 45);
+}

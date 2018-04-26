@@ -58,7 +58,6 @@ public:
 #endif
 };
 
-
 int main(int /*argc*/, char** /*argv*/) {
     InitializerList oil{{3, 4, 7, 9, 2}, {{"Sajal", "Agarwal"}, "Lucknow", 32, {"Movie", "TV", "Gardening"}}};
     oil.print();

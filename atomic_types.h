@@ -25,14 +25,11 @@ public:
 #endif //ATOMIC_TYPE_H
 
 
-#if 0
 struct Test2 {
     int a;
     int b;
     int sum () { return a + b; }
 };
-
-#include <atomic_types.h>
 
 int main(int /*argc*/, char** /*argv*/) {
 #if 0
@@ -41,4 +38,3 @@ int main(int /*argc*/, char** /*argv*/) {
     std::atomic<Test2> oaTest2; // no error, but if we add a constructor to Test2 class
                                 // Test2 becomes non trivially copyable type, so error
 }
-#endif
