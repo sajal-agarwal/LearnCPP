@@ -5,6 +5,11 @@
 #include <unordered_map>
 #include <map>
 
+#define USE_USER_DEFINED_HASH_FUNCTOR 0
+
+#if !USE_USER_DEFINED_HASH_FUNCTOR
+#include <hash_func.h>
+#endif
 #if 0
 namespace std {
     template<>
@@ -15,7 +20,7 @@ namespace std {
         }
     };
 }
-#endif // 0
+
 
 //Below is the more generalized specialization to support std::pair<> of any genric types
 namespace std {
@@ -27,9 +32,25 @@ namespace std {
         }
     };
 }
+#endif // 0
+
+#if USE_USER_DEFINED_HASH_FUNCTOR
+template<typename T1, typename T2>
+struct hash_for_pair {
+    size_t operator()(const std::pair<size_t, int>& key) const
+    {
+        return (std::hash<T1>()(key.first) ^ std::hash<T2>()(key.second));
+    }
+};
+#endif
 
 template<size_t N>
-size_t dp_numOfSetsWithEqualSum(std::array<unsigned, N> &arr, size_t sum, int index, std::unordered_map<std::pair<size_t, int>, size_t> &t) {
+size_t dp_numOfSetsWithEqualSum(std::array<unsigned, N> &arr, size_t sum, int index, std::unordered_map<std::pair<size_t, int>, size_t
+#if USE_USER_DEFINED_HASH_FUNCTOR
+    , hash_for_pair<size_t, int>
+#endif
+> &t
+) {
     auto it = t.find(std::make_pair(sum, index));
     if (it != t.end()) {
         std::cout << "sum = " << sum << " index = " << index << '\n';
@@ -107,13 +128,16 @@ size_t rec_numOfSetsWithEqualSum(std::array<unsigned, N> &arr, size_t sum, int i
 
 template<size_t N>
 size_t numOfSetsWithEqualSum(std::array<unsigned, N> arr, size_t sum) {
-    std::unordered_map<std::pair<size_t, int>, size_t> t;
+    std::unordered_map<std::pair<size_t, int>, size_t
+#if USE_USER_DEFINED_HASH_FUNCTOR
+        , hash_for_pair<size_t, int>
+#endif
+    > t;
     auto count = dp_numOfSetsWithEqualSum(arr, sum, 0, t);
     return count;
 }
 
 int main() {
-    std::hash<std::string> h;
     std::array<unsigned, 20> arr{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
     std::cout << "----------------------------------------\n"
         "Number of sets with equal sum = " << numOfSetsWithEqualSum(arr, 16) << std::endl;
