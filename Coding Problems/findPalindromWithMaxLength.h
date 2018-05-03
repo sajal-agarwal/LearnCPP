@@ -74,6 +74,31 @@ size_t r_lps(std::array<char, N> &inStr, size_t bi, size_t ei) {
     return std::max(r_lps(inStr, bi + 1, ei), r_lps(inStr, bi, ei - 1));
 }
 
+//recursive solution
+template<size_t N>
+void r_lenOfLargestPossiblePalindrom(std::array<char, N> &inStr, size_t bi, size_t ei
+	, size_t &maxlen, size_t len = 0) {
+	if (bi == ei) {
+		len += 1;
+		if (maxlen < len)
+			maxlen = len;
+		return;
+
+	}
+	if ((1 + bi) == ei) {
+		len += 2;
+		if (maxlen < len)
+			maxlen = len;
+		return;
+	}
+
+	if (inStr[bi] == inStr[ei])
+		r_lenOfLargestPossiblePalindrom(inStr, bi + 1, ei - 1, maxlen, len + 2);
+
+	r_lenOfLargestPossiblePalindrom(inStr, bi + 1, ei, maxlen, 0);
+	r_lenOfLargestPossiblePalindrom(inStr, bi, ei - 1, maxlen, 0);
+}
+
 template<size_t N>
 size_t lps(std::array<char, N> &&inStr) {
 #if 0
@@ -83,15 +108,23 @@ size_t lps(std::array<char, N> &&inStr) {
     size_t m[N][N]{ 0 };
     return dp_lps(inStr, 0, N - 1, m);
 #endif
-    std::pair<size_t, size_t> m[N][N];
-    auto range = dp_lps(inStr, 0, N - 1, m);
-    for (size_t i = range.second - 1; i < range.first; ++i)
-        std::cout << inStr[i];
-    std::cout << '\n';
-    return (range.first - range.second + 1);
+#if 0
+	std::pair<size_t, size_t> m[N][N];
+	auto range = dp_lps(inStr, 0, N - 1, m);
+	for (size_t i = range.second - 1; i < range.first; ++i)
+		std::cout << inStr[i];
+	std::cout << '\n';
+	return (range.first - range.second + 1);
+#endif
+
+	size_t maxlen = 0;
+
+	r_lenOfLargestPossiblePalindrom(inStr, 0, N - 1, maxlen);
+
+	return maxlen;
 }
 
 int main() {
-    lps(std::array<char, 7>{ 'm', 'a', 'b', 'c', 'b', 'a', 'd' });
+    std::cout << lps(std::array<char, 9>{ 'm', 'a', 'b', 'm', 'o', 'm', 'b', 'a', 'd' });
 }
 
