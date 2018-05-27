@@ -12,6 +12,18 @@ struct Node
 
     Node(char data) : m_data(data) {}
 
+    ~Node() {
+        if (nullptr != m_left) {
+            delete m_left;
+            m_left = nullptr;
+        }
+
+        if (nullptr != m_right) {
+            delete m_right;
+            m_right = nullptr;
+        }
+    }
+
     Node* left() { return m_left; }
 
     Node* right() { return m_right; }
@@ -91,4 +103,6 @@ int main() {
     auto r1 = root->addRight('C')->addRight('M')->addRight('P');
     std::cout << "Min Depth: " << findMinimumDepthInBinaryTree(root) << '\n';
     std::cout << "Max Depth: " << findMaximumDepthInBinaryTree(root) << '\n';
+
+    delete root;
 }
