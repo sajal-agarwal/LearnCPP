@@ -157,8 +157,48 @@ std::string findLargestCommonSubSequence(std::array<char, N1> &&s1, std::array<c
 	return lcs;
 }
 
+template<size_t N>
+void true_dp_printLargestPalindromicSequence(std::array<char, N> &arr, size_t(&m)[N][N]) {
+	for (int i = 0; i < N; ++i)
+		m[i][i] = 1;
+
+	for (int i = 0; i < N - 1; ++i)
+		m[i][i + 1] = (arr[i] == arr[i + 1]);
+
+	size_t maxLen = 1, start = 0, end = 0;
+	for (int s = 2; s < N; ++s) {
+		for (int i = 0, j = s; j < N; ++i, ++j) {
+			if (m[i + 1][j - 1] && (arr[i] == arr[j])) {
+				m[i][j] = m[i + 1][j - 1] + 2;
+				if (m[i][j] > maxLen) {
+					maxLen = m[i][j];
+					start = i;
+					end = j;
+				}
+			}
+		}
+	}
+
+	for (int i = start; i <= end; ++i)
+		std::cout << arr[i];
+
+	std::cout << '\n';
+}
+
+template<size_t N>
+void printLargestPalindromicSequence(std::array<char, N> &&arr) {
+	size_t m[N][N] = { 0 };
+	true_dp_print_lpsst(arr, m);
+}
+
 int main() {
     std::cout << findLargestCommonSubSequence(
         std::array<char, 11>{'h', 'i', 'p', 'a', 'b', 'm', 'n', 'c', 'd', 'e', 'g'}
     , std::array<char, 9>{'y', 'a', 'b', 'k', 'c', 'd', 'e', 'f', 'g'}) << '\n';
 }
+
+#if 0
+int main() {
+	printLargestPalindromicSequence(std::array<char, 14>{'b', 'a', 'n', 'a', 'n', 'a', 'k', 'b', 'a', 'n', 'a', 'n', 'a', 'b'});
+}
+#endif // 0

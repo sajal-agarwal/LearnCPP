@@ -1,7 +1,9 @@
-#include <vector>
+#include <test.h>
 
-std::vector<int> v;
+inline void Test::foo() {
 
-void pushint(int e) {
-    v.push_back(e);
+}
+
+void Test::callFoo() {
+	foo();
 }
