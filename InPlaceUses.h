@@ -63,7 +63,12 @@ int main()
     }
     {
         std::cout << "2)-----------\n";
-        std::optional<Test> t2{ std::in_place, 3, "CPP" };
+        std::optional<Test> t{ std::in_place, 3, "CPP" };
+    }
+    {
+        // This is same as std::in_place
+        std::cout << "3)-----------\n";
+        std::optional<Test> t = std::make_optional<Test>(3, "CPP");
     }
 #endif // IN_PLACE_WITH_OPTIONAL
 
@@ -85,6 +90,11 @@ int main()
         * contructor will know what type of object to be created
         * in place.
         */
+    }
+    {
+        // This is same as std::in_place_type
+        std::cout << "3)-----------\n";
+        std::any any = std::make_any<Test>(3, "CPP");
     }
 #endif // IN_PLACE_WITH_ANY
 
