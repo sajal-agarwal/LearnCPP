@@ -4,7 +4,9 @@
 
 class MoveConstruct {
 public:
-	MoveConstruct() = default;
+	MoveConstruct() {
+		std::cout << "Constructor called!" << std::endl;
+	}
 
 	// Copy constructor
 	MoveConstruct(const MoveConstruct& other) {
@@ -15,11 +17,11 @@ public:
 		std::cout << "Assignment operator called!" << std::endl;
 	}
 	// Move constructor
-	MoveConstruct(MoveConstruct&& other) {
+	MoveConstruct(MoveConstruct&& other) noexcept {
 		std::cout << "Move constructor called!" << std::endl;
 	}
 	// Move assignment operator
-	MoveConstruct& operator=(MoveConstruct&& other) {
+	MoveConstruct& operator=(MoveConstruct&& other) noexcept {
 		std::cout << "Move assignment operator called!" << std::endl;
 	}
 
@@ -32,17 +34,19 @@ public:
 	}
 };
 
-#if 0 //main.cpp
-#include <iostream>
-#include "move_construct.cpp"
-
 MoveConstruct get() {
+#if 0 // This contruct and move
 	MoveConstruct omc;
 	return omc;
+#endif
+	/*
+	* This will only contruct no move.
+	* This is known as copy and move elision.
+	*/
+	return MoveConstruct{};
 }
 int main(int /*argc*/, char **/*argv*/) {
 	MoveConstruct omc = get();
 	MoveConstruct omc2;
 	omc.foo(get());
 }
-#endif

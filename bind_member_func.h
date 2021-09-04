@@ -15,8 +15,8 @@ void func3(Test o, void (Test::*f)(int, std::string)) {
     (o.*f)(2, "you");
 }
 
-template<typename... Args>
-void func4(std::function<void(int, std::string)> f, Args... args){
+template<typename... Params>
+void func4(std::function<void(int, std::string)> f, Params... args){
     f(args...);
 }
 

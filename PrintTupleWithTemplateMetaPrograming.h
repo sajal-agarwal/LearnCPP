@@ -1,28 +1,59 @@
 #pragma once
-#include<tuple>
-#include<iostream>
+#include <iostream>
 
 
-template<size_t I, typename Tuple>
-struct PrintTuple {
-    static void print(const Tuple &t) {
-        PrintTuple<I - 1, Tuple>::print(t);
-        std::cout << std::get<I>(t) << ' ';
+template<size_t N>
+struct PrintTuple
+{
+    template<typename T>
+    PrintTuple(T&& t)
+    {
+        PrintTuple<N - 1>{ std::forward<T>(t) };
+        std::cout << (N > 1 ? ", " : "") << std::get<N - 1>(t) << ' ';
     }
 };
 
-template<typename Tuple>
-struct PrintTuple<0, Tuple> { 
-    static void print(const Tuple& t) {
-        std::cout << std::get<0>(t) << ' ';
+template<>
+struct PrintTuple <0>
+{
+    template<typename T>
+    PrintTuple([[maybe_unused]] T&& t)
+    {
     }
 };
 
-template<typename ... Args>
-void printTuple(const std::tuple<Args...> &t) {
-    PrintTuple<sizeof...(Args) - 1, std::tuple<Args...>>::print(t);
+template<typename T>
+void printTuple(T&& t)
+{
+    PrintTuple<std::tuple_size_v<T>>{ std::forward<T>(t) };
 }
 
-int main() {
-    printTuple(std::make_tuple(2, 3.1415, "C++17"));
+/*
+* Another implementation using just the struct
+* with templatized constructor
+*/
+struct Print_Tuple
+{
+    template<typename T>
+    Print_Tuple(T&& t)
+    {
+        print(std::forward<T>(t));
+    }
+
+    template<typename T, size_t N = std::tuple_size_v<T>>
+    void print(T&& t)
+    {
+        if constexpr (N > 0)
+        {
+            print<T, N - 1>(std::forward<T>(t));
+            std::cout << (N > 1 ? ", " : "") << std::get<N - 1>(t) << ' ';
+        }
+    }
+};
+
+
+int main()
+{
+    printTuple(std::make_tuple(12, 4.5, "C++"));
 }
+

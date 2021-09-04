@@ -56,16 +56,14 @@ public:
 };
 
 
-#if 0	//This is not compiling in VS2017
 //Perfect forwarding with variadic template using one function
 template <typename... Ts>
-struct D
+struct Test
 {
 	template <typename... Us>
 	std::enable_if_t<(std::is_convertible_v<std::remove_cv_t<std::remove_reference_t<Us>>, std::remove_cv_t<std::remove_reference_t<Ts>>> && ...)> foo(Us&&... t) {
 	}
 };
-#endif
 
 //Perfect forwarding with variadic template using one function with disjunction
 /*
