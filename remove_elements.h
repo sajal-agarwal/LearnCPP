@@ -19,6 +19,15 @@ bool removeElements(std::vector<int> v, size_t offset) {
     return true;
 }
 
+/*
+* Another way to achieve same behavior using fold expression
+*/
+template<typename...T>
+std::enable_if_t<(std::is_integral_v<T> &&...), bool> removeElements(std::vector<int>& v, T...t) {
+    size_t offset = 0, pos = 0;
+    return ((pos = t - offset++, (pos < v.size()) && v.erase(v.begin() + pos) <= v.end()) &&...);
+}
+
 int main() {
     //Remove at gives indexes
     std::vector<int> v{ 1, 2, 3, 4, 5, 6, 7, 8 };
